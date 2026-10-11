@@ -167,8 +167,7 @@ What is in it:
 | `messageId`, `date`, `subject` | From the headers, decoded. `date` is in UTC (ISO 8601); empty when the mail has none |
 | `from`, `to`, `cc`, `replyTo` | Lists of `name` and `address`. An address that cannot be read is kept as it was written |
 | `headers` | All headers, in order, decoded |
-| `text`, `html` | The plain text and the HTML body (with several parts of one kind, joined by a newline). A mail that has only HTML also gets a `text` made from it. Line endings are `
-` |
+| `text`, `html` | The plain text and the HTML body (with several parts of one kind, joined by a newline). A mail that has only HTML also gets a `text` made from it. Line endings are `\n` |
 | `attachments` | Per attachment `filename`, `contentType`, `size` (bytes), `contentId`, `disposition` and, unless *Attachment Content* is off, `content` in Base64. Inline images and attached mails (`message/rfc822`) are attachments too |
 | `parseError` | Only present when the mail could not be read. `text` then holds the raw mail, so nothing is lost |
 
@@ -315,6 +314,8 @@ Requirements: a JDK 11+ (the runtime bundled with the engine, `<OIE_HOME>/jre`, 
    ```
 
 ## Design notes (for developers)
+
+The [development guide](docs/development.md) covers building, the life cycle, the SMTP session, replies, message formats, TLS, the settings panels, testing and releasing in detail. In short:
 
 - **The SMTP server knows nothing about the engine.** `SmtpServer` and `SmtpSession` only call a `Handler` for each complete message; `SmtpReceiver` is the thin part that turns a message into a `RawMessage` and the channel's result into an SMTP reply. That is what makes the protocol testable on its own, with real clients.
 - **Mail parsing.** JSON and XML come from `EmailParser`, which uses a bundled Jakarta Mail (in `lib/`). Parts are read through their input streams and never with `getContent()`, because the engine ships an older mail library whose mailcap handlers clash with it. `EmailParser` never throws: a mail it cannot read is passed on as raw text with `parseError`.
