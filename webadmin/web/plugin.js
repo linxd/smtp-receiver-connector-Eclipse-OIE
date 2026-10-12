@@ -14,15 +14,15 @@ import {
 } from "@oie/web-ui";
 
 const PROPERTIES_CLASS = "com.mirth.connect.connectors.smtpreceiver.shared.SmtpReceiverProperties";
-const CONNECTOR_NAME = "SMTP Receiver";
+const CONNECTOR_NAME = "SMTP 接收器";
 
 const TLS_OPTIONS = [
-  { value: "NONE", label: "None" },
+  { value: "NONE", label: "无" },
   { value: "STARTTLS", label: "STARTTLS" },
-  { value: "IMPLICIT", label: "Implicit TLS (SMTPS)" }
+  { value: "IMPLICIT", label: "隐式 TLS (SMTPS)" }
 ];
 const FORMAT_OPTIONS = [
-  { value: "RFC822", label: "Plain text (RFC 822)" },
+  { value: "RFC822", label: "纯文本 (RFC 822)" },
   { value: "JSON", label: "JSON" },
   { value: "XML", label: "XML" }
 ];
@@ -48,7 +48,7 @@ export function parseUsers(text) {
     if (trimmed === "" || trimmed.startsWith("#")) return;
     const colon = trimmed.indexOf(":");
     if (colon < 1) {
-      errors.push(`line ${i + 1}`);
+      errors.push(`第 ${i + 1} 行`);
       return;
     }
     users.push({ user: trimmed.slice(0, colon).trim(), password: trimmed.slice(colon + 1).trim() });
@@ -99,24 +99,24 @@ export function createSmtpReceiver(platform) {
         fields: [
           { section: "Listener Settings" },
           listenerAddressField("listenerConnectorProperties.host", "Local Address"),
-          { key: "listenerConnectorProperties.port", label: "Local Port", type: "number", width: "90px", append: () => portsInUseButton() },
-          { type: "display", label: "SMTP Address", compute: smtpAddress },
+          { key: "listenerConnectorProperties.port", label: "本地端口", type: "number", width: "90px", append: () => portsInUseButton() },
+          { type: "display", label: "SMTP 地址", compute: smtpAddress },
 
           { section: "SMTP Server" },
-          { key: "hostname", label: "Hostname", type: "text", width: "220px", tooltip: "Name in the greeting of the server. Empty: the name of this machine." },
+          { key: "hostname", label: "主机名", type: "text", width: "220px", tooltip: "服务器问候语中的名称。留空：使用本机名称。" },
           {
             key: "requireAuthentication",
-            label: "Require Login",
+            label: "要求登录",
             type: "radio",
             options: YES_NO,
-            tooltip: "Without a login, mail is only accepted from clients that authenticate (AUTH PLAIN or LOGIN). Switch this off only on a network you trust."
+            tooltip: "不要求登录时，仅接受通过身份验证（AUTH PLAIN 或 LOGIN）的客户端的邮件。请仅在受信任的网络上关闭此选项。"
           },
           {
             key: "users",
-            label: "Users",
+            label: "用户",
             type: "textarea",
             rows: 4,
-            tooltip: "One username:password per line. Lines starting with # are ignored. The password may contain colons."
+            tooltip: "每行一个 用户名:密码。以 # 开头的行将被忽略。密码中可包含冒号。"
           },
           {
             key: "tlsMode",
@@ -125,38 +125,38 @@ export function createSmtpReceiver(platform) {
             width: "220px",
             options: TLS_OPTIONS,
             refresh: true,
-            tooltip: "STARTTLS: the client upgrades the connection (usually port 587 or 25). Implicit TLS: encrypted from the first byte (usually port 465). With TLS, logins are only accepted over the encrypted connection."
+            tooltip: "STARTTLS：客户端升级连接（通常为端口 587 或 25）。隐式 TLS：从第一个字节起即加密（通常为端口 465）。启用 TLS 时，仅接受通过加密连接的登录。"
           },
-          { key: "keystorePath", label: "Keystore File", type: "text", width: "320px", visible: usesTls, tooltip: "Path of the keystore with the server certificate and its private key" },
-          { key: "keystorePassword", label: "Keystore Password", type: "password", width: "220px", visible: usesTls },
-          { key: "keyPassword", label: "Key Password", type: "password", width: "220px", visible: usesTls, tooltip: "Password of the private key. Empty: same as the keystore password." },
-          { key: "keystoreType", label: "Keystore Type", type: "select", width: "120px", options: KEYSTORE_TYPES, visible: usesTls },
+          { key: "keystorePath", label: "密钥库文件", type: "text", width: "320px", visible: usesTls, tooltip: "包含服务器证书及其私钥的密钥库路径" },
+          { key: "keystorePassword", label: "密钥库密码", type: "password", width: "220px", visible: usesTls },
+          { key: "keyPassword", label: "密钥密码", type: "password", width: "220px", visible: usesTls, tooltip: "私钥的密码。留空：与密钥库密码相同。" },
+          { key: "keystoreType", label: "密钥库类型", type: "select", width: "120px", options: KEYSTORE_TYPES, visible: usesTls },
 
           { section: "Limits" },
-          { key: "maxMessageSize", label: "Max Message Size (MB)", type: "number", width: "90px", tooltip: "Larger messages are refused with 552. 0 = no limit." },
-          { key: "maxConnections", label: "Max Connections", type: "number", width: "90px", tooltip: "Clients that connect beyond this number get 421 and are asked to try again later" },
-          { key: "maxRecipients", label: "Max Recipients", type: "number", width: "90px", tooltip: "Per message" },
-          { key: "timeout", label: "Timeout (seconds)", type: "number", width: "90px", tooltip: "A client that stays silent this long is disconnected" },
+          { key: "maxMessageSize", label: "最大消息大小 (MB)", type: "number", width: "90px", tooltip: "超大的邮件将以 552 拒绝。0 = 无限制。" },
+          { key: "maxConnections", label: "最大连接数", type: "number", width: "90px", tooltip: "超过此数量的客户端连接将收到 421 并被要求稍后重试" },
+          { key: "maxRecipients", label: "最大收件人数", type: "number", width: "90px", tooltip: "每封邮件" },
+          { key: "timeout", label: "超时（秒）", type: "number", width: "90px", tooltip: "客户端保持静默超过此时长将被断开" },
 
-          { section: "Message" },
+          { section: "消息" },
           {
             key: "messageFormat",
-            label: "Message Format",
+            label: "消息格式",
             type: "select",
             width: "220px",
             options: FORMAT_OPTIONS,
             refresh: true,
-            tooltip: "Plain text: the mail exactly as it was sent (headers, empty line, body). JSON or XML: the mail taken apart into subject, from, to, date, headers, text, html and attachments, with the envelope."
+            tooltip: "纯文本：邮件原样发送（信头、空行、正文）。JSON 或 XML：将邮件拆分为主题、发件人、收件人、日期、信头、文本、HTML 和附件，以及信封信息。"
           },
           {
             key: "includeAttachmentContent",
-            label: "Attachment Content",
+            label: "附件内容",
             type: "radio",
             options: YES_NO,
             visible: isParsed,
-            tooltip: "Put the attachments themselves in the message (Base64). With No only their name, type and size are listed."
+            tooltip: "将附件本身放入消息中（Base64）。选择“否”时仅列出其名称、类型和大小。"
           },
-          { key: "charset", label: "Character Set", type: "text", width: "120px", tooltip: "Plain text: how the bytes of the mail become text, for example UTF-8 or ISO-8859-1. JSON and XML: used for parts of the mail that do not name their own character set." }
+          { key: "charset", label: "字符集", type: "text", width: "120px", tooltip: "纯文本：邮件字节如何转换为文本，例如 UTF-8 或 ISO-8859-1。JSON 和 XML：用于未指定自身字符集的邮件部分。" }
         ]
       });
     },
@@ -164,18 +164,18 @@ export function createSmtpReceiver(platform) {
     // Mirrors the Swing panel (SmtpReceiverPanel.checkProperties).
     validate(properties) {
       const errors = requireFields(properties, [
-        { key: "listenerConnectorProperties.host", label: "Local Address" },
-        { key: "listenerConnectorProperties.port", label: "Local Port" },
-        { key: "charset", label: "Character Set" },
-        { key: "keystorePath", label: "Keystore File", when: usesTls }
+        { key: "listenerConnectorProperties.host", label: "本地地址" },
+        { key: "listenerConnectorProperties.port", label: "本地端口" },
+        { key: "charset", label: "字符集" },
+        { key: "keystorePath", label: "密钥库文件", when: usesTls }
       ]);
 
       const numbers = [
-        { key: "listenerConnectorProperties.port", label: "Local Port (1-65535)", value: properties.listenerConnectorProperties?.port, min: 1, max: 65535, skipTemplates: true },
-        { key: "maxMessageSize", label: "Max Message Size (0-2000)", value: properties.maxMessageSize, min: 0, max: 2000 },
-        { key: "maxConnections", label: "Max Connections (1-10000)", value: properties.maxConnections, min: 1, max: 10000 },
-        { key: "maxRecipients", label: "Max Recipients (1-100000)", value: properties.maxRecipients, min: 1, max: 100000 },
-        { key: "timeout", label: "Timeout (1-86400)", value: properties.timeout, min: 1, max: 86400 }
+        { key: "listenerConnectorProperties.port", label: "本地端口 (1-65535)", value: properties.listenerConnectorProperties?.port, min: 1, max: 65535, skipTemplates: true },
+        { key: "maxMessageSize", label: "最大消息大小 (0-2000)", value: properties.maxMessageSize, min: 0, max: 2000 },
+        { key: "maxConnections", label: "最大连接数 (1-10000)", value: properties.maxConnections, min: 1, max: 10000 },
+        { key: "maxRecipients", label: "最大收件人数 (1-100000)", value: properties.maxRecipients, min: 1, max: 100000 },
+        { key: "timeout", label: "超时 (1-86400)", value: properties.timeout, min: 1, max: 86400 }
       ];
       for (const n of numbers) {
         if (errors.some((e) => e.key === n.key)) continue;
@@ -185,9 +185,9 @@ export function createSmtpReceiver(platform) {
 
       const { users, errors: badLines } = parseUsers(properties.users);
       if (badLines.length > 0) {
-        errors.push({ key: "users", label: `Users (${badLines.join(", ")}: expected username:password)` });
+        errors.push({ key: "users", label: `用户（${badLines.join(", ")}：应为 用户名:密码 格式）` });
       } else if (asBool(properties.requireAuthentication) && users.length === 0) {
-        errors.push({ key: "users", label: "Users (at least one is needed when a login is required)" });
+        errors.push({ key: "users", label: "用户（要求登录时至少需要一个用户）" });
       }
       return errors;
     }

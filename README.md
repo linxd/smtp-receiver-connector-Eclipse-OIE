@@ -1,4 +1,4 @@
-# SMTP Receiver for Eclipse OIE
+# Eclipse OIE SMTP 接收器
 
 A **source connector type** for [Eclipse Open Integration Engine](https://openintegrationengine.org/) (tested against **4.6.0**) that runs an **SMTP server** in a channel. Mail that is sent to it is handed to the channel as plain text (the mail as it was sent), or as JSON or XML with the mail taken apart: subject, sender, recipients, text, HTML and attachments. Choose "SMTP Receiver" as the Source of a channel in the Swing client or the web administrator.
 
@@ -6,7 +6,7 @@ A **source connector type** for [Eclipse Open Integration Engine](https://openin
 
 It is the counterpart of the built-in *SMTP Sender*, and a replacement for the do-it-yourself version with a JavaScript Reader and a `ServerSocket` (see [Migrating](#migrating-from-a-javascript-reader-channel)).
 
-## What you get
+## 功能概览
 
 - "SMTP Receiver" in the Source connector type list of the **Swing client** and the **web administrator**, with the usual *Local Address / Local Port* settings and the *Ports in Use* check.
 - **Authentication** with `AUTH PLAIN` and `AUTH LOGIN`, with a list of users. A login is required by default.
@@ -16,7 +16,7 @@ It is the counterpart of the built-in *SMTP Sender*, and a replacement for the d
 - Limits: message size, connections, recipients per mail, idle timeout.
 - As plain text the mail arrives **unchanged**: headers, the empty line, the body, 8-bit data and lines that start with a dot are all intact. The envelope (who sent it, to whom, from where, logged in as whom) is in the source map. Or choose **JSON** or **XML** and get the mail taken apart: subject, from, to, text, HTML and attachments.
 
-## Install
+## 安装
 
 0. Or install it from the [OIE Community Store](https://github.com/gibson9583/oie-community-store), where it is listed as **SMTP Receiver**.
 1. Download `smtp-receiver-connector-<version>.zip` from the [Releases](../../releases) page (or build it, see below).
@@ -26,7 +26,7 @@ It is the counterpart of the built-in *SMTP Sender*, and a replacement for the d
 
 If the installer refuses because the extension already exists, uninstall the old version first and restart.
 
-## Settings
+## 设置项
 
 | Setting | Meaning | Default |
 |---|---|---|
@@ -48,7 +48,7 @@ With login required, at least one user must be defined, and with TLS a keystore 
 
 Beyond these settings the channel's usual *Source Settings* apply (queue, response, processing threads).
 
-## What the channel receives
+## 通道接收到的内容
 
 ### Message format "Plain text (RFC 822)" (default)
 
@@ -185,7 +185,7 @@ for (var i = 0; i < msg['attachments'].length; i++) {
 
 With very large attachments, switch *Attachment Content* off: a message in the channel with Base64 attachments is a third bigger than the mail itself.
 
-### Source map
+### 源映射
 
 Available in every format, for example `sourceMap.get('mailFrom')`:
 
@@ -201,7 +201,7 @@ Available in every format, for example `sourceMap.get('mailFrom')`:
 
 The envelope is what SMTP delivers to; it can differ from the `From:` and `To:` headers, and that is exactly what a mailing list, a BCC or a forward does.
 
-## What the sender gets back
+## 发件人收到的回复
 
 | Reply | When |
 |---|---|
@@ -217,7 +217,7 @@ The envelope is what SMTP delivers to; it can differ from the `From:` and `To:` 
 
 When a channel is stopped or redeployed, clients that are only waiting for a command are told `421` at once; a mail that is being processed is finished first (up to 5 seconds).
 
-## Try it
+## 试用
 
 [`examples/Send-TestMail.ps1`](examples/Send-TestMail.ps1) sends one mail through the receiver with .NET's `SmtpClient`:
 
@@ -229,7 +229,7 @@ When a channel is stopped or redeployed, clients that are only waiting for a com
 
 Any mail client or library works, for example Python's `smtplib`, `swaks`, or the SMTP Sender of another OIE channel.
 
-## Logging and status
+## 日志与状态
 
 - The **dashboard** shows what the connector does: the connection count, the mail that is being received, and in the channel's connection log `Listening on 0.0.0.0:2587 (STARTTLS)` when the channel starts and `Stopped listening on port 2587` when it stops.
 - Problems that need attention (a keystore that cannot be loaded, a port that is in use, an error while processing a mail) are errors: they show in the dashboard and in `mirth.log` at the default log level.
@@ -242,7 +242,7 @@ logger.smtpreceiver.level = INFO
 
 - To check that the port is open without any log: `Get-NetTCPConnection -State Listen -LocalPort 2587` in PowerShell.
 
-## Security notes
+## 安全注意事项
 
 - Passwords (users, keystore) are stored in the channel, like the password of any other connector. Anyone who can export the channel can read them.
 - This is a **receiver**, not a relay: it hands mail to the channel and never forwards it. It accepts any recipient address, because it is the channel's job to decide what to do with a mail.
@@ -251,7 +251,7 @@ logger.smtpreceiver.level = INFO
 - The server refuses `AUTH` during a mail transaction, ignores commands sent behind `STARTTLS` in the same packet (CVE-2011-0411) and does not reveal whether a user exists.
 - Only TLS 1.2 and 1.3 are enabled.
 
-## Not included
+## 未包含的功能
 
 - No `SMTPUTF8`, no `DSN`, no `CHUNKING`/`BDAT`, no `AUTH CRAM-MD5`/`XOAUTH2`.
 - No rejection of individual recipients or senders (`550`); use a filter in the channel.
@@ -259,7 +259,7 @@ logger.smtpreceiver.level = INFO
 - No greylisting, rate limiting or spam filtering. Only the maximum number of connections.
 - The mail is held in memory while it is received (up to the maximum size).
 
-## Migrating from a JavaScript Reader channel
+## 从 JavaScript Reader 通道迁移
 
 The do-it-yourself version (a JavaScript Reader that opens a `ServerSocket`, and a second channel that processes the JSON) can be replaced as follows:
 
@@ -281,7 +281,7 @@ What changes, all for the better:
 | No `AUTH PLAIN`, no TLS, no limits | `AUTH PLAIN` and `LOGIN`, STARTTLS and SMTPS, limits and time-outs |
 | Lines that start with a dot were sent doubled by the client and not restored | Restored (RFC 5321 dot-unstuffing) |
 
-## Build
+## 构建
 
 Requirements: a JDK 11+ (the runtime bundled with the engine, `<OIE_HOME>/jre`, includes `javac` and `keytool` and works as `JAVA_HOME`) and Maven 3.9+.
 
@@ -313,7 +313,7 @@ Requirements: a JDK 11+ (the runtime bundled with the engine, `<OIE_HOME>/jre`, 
    └── webadmin/                   (web administrator panel: plugin.json + web/plugin.js)
    ```
 
-## Design notes (for developers)
+## 设计说明（开发者）
 
 The [development guide](docs/development.md) covers building, the life cycle, the SMTP session, replies, message formats, TLS, the settings panels, testing and releasing in detail. In short:
 
@@ -325,6 +325,6 @@ The [development guide](docs/development.md) covers building, the life cycle, th
 - **`MirthPasswordField` cannot be hidden** (it overrides `isVisible()`), so the Swing panel uses a small subclass to show the keystore fields only when TLS is on.
 - **Web administrator.** `webadmin/web/plugin.js` registers the panel with `platform.registerConnectorPanel("SMTP Receiver", "SOURCE", ...)`. Engine-hosted web plugins are loaded as a single module, so it imports only the bare `@oie/web-ui` specifier and reads `platform.React` at render time.
 
-## License
+## 许可证
 
 [Mozilla Public License 2.0](LICENSE).
