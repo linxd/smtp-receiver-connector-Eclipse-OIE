@@ -97,12 +97,12 @@ export function createSmtpReceiver(platform) {
         properties,
         onChange,
         fields: [
-          { section: "Listener Settings" },
-          listenerAddressField("listenerConnectorProperties.host", "Local Address"),
+          { section: "监听器设置" },
+          listenerAddressField("listenerConnectorProperties.host", "本地地址"),
           { key: "listenerConnectorProperties.port", label: "本地端口", type: "number", width: "90px", append: () => portsInUseButton() },
           { type: "display", label: "SMTP 地址", compute: smtpAddress },
 
-          { section: "SMTP Server" },
+          { section: "SMTP 服务器" },
           { key: "hostname", label: "主机名", type: "text", width: "220px", tooltip: "服务器问候语中的名称。留空：使用本机名称。" },
           {
             key: "requireAuthentication",
@@ -132,7 +132,7 @@ export function createSmtpReceiver(platform) {
           { key: "keyPassword", label: "密钥密码", type: "password", width: "220px", visible: usesTls, tooltip: "私钥的密码。留空：与密钥库密码相同。" },
           { key: "keystoreType", label: "密钥库类型", type: "select", width: "120px", options: KEYSTORE_TYPES, visible: usesTls },
 
-          { section: "Limits" },
+          { section: "限制" },
           { key: "maxMessageSize", label: "最大消息大小 (MB)", type: "number", width: "90px", tooltip: "超大的邮件将以 552 拒绝。0 = 无限制。" },
           { key: "maxConnections", label: "最大连接数", type: "number", width: "90px", tooltip: "超过此数量的客户端连接将收到 421 并被要求稍后重试" },
           { key: "maxRecipients", label: "最大收件人数", type: "number", width: "90px", tooltip: "每封邮件" },
